@@ -14,7 +14,7 @@ schemas:
     digest: 74df7213463361845fc52b499dbea1627b3bf6d924caee92d33b405b66317ff7
 stock:
   tool: openspec
-  version: null
+  version: 1.14.3
   tool_dirs:
     - cursor
 files:
