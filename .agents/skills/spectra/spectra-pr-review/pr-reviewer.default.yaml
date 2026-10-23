@@ -1,0 +1,298 @@
+# pr-reviewer.default.yaml
+#
+# The neutral default that the pr-review, pr-code-review and check-* prompts read.
+# A repo deep-merges its own .pr-reviewer.yaml over this file, key by key.
+# This file holds no organization data: no standards catalog, no escalation list, no
+# private bot names and no central ADR repo. A team sets those in its .pr-reviewer.yaml.
+#
+# A standard is a path or an absolute URL. The standards source rule is in the prompts:
+# the argument standards=<directory or URL prefix>, or else the standards/ directory of the repo.
+
+template_version: 8
+version: 1
+
+# ── Profiles (repo_type selects one) ─────────────────────────────────────────────
+
+profiles:
+  docs:
+    context:
+      decisions:
+        system_paths: []
+      dives:
+        preload_on_diff: true
+        glob: []
+      discussions:
+        congruence_on_diff: true
+        paths: []
+      standards:
+        enforce: triggered
+    shards:
+      run:
+        - pr-branch-summary-tree
+        - check-conformance
+        - check-congruence
+
+  service:
+    context:
+      standards:
+        enforce: triggered
+      kb:
+        paths:
+          - "AGENTS.md"
+    shards:
+      run:
+        - pr-branch-summary-tree
+        - check-conformance
+        - check-congruence
+        - code-review
+
+  other:
+    context:
+      standards:
+        sources: []
+        enforce: null
+    shards:
+      run:
+        - pr-branch-summary-tree
+
+# ── Shared defaults (all repo types) ───────────────────────────────────────────
+
+autonomy:
+  mode: block_only
+  confidence_threshold: 0.85
+  auto_approve: false
+  max_review_iterations: 5
+  negotiation_turn_limit: 3
+  fast_path: true
+  review_budget_minutes: 10
+
+# Merge policy. Without a section a repo observes only.
+merge_policy:
+  tier: shadow                     # shadow | replace_reviewer | auto_merge_exploration
+  risk_tier:
+    classify: path_based
+    high_risk_paths: []
+    default: high
+  policy:
+    minimum_human_approvals: 1
+    repo_owner_review_required: true
+    ai_replaces_generalist_slot: false
+    blocking_commenter_when_single_review: true
+    auto_merge:
+      enabled: false
+      eligible_risk_tiers:
+        - low
+      require_reviewer_decision: APPROVE
+  override:
+    allowed: true
+    logging: required
+    store: .pr-reviewer/overrides/
+
+# Checker approval. With false, a clean run posts a COMMENT and does not use an approval slot.
+checker_approval:
+  post_github_approve: false
+  hold_when_human_changes_requested: false
+
+# Review event. This maps the verdict to a GitHub review event.
+review_event_policy:
+  allowed_events:
+    - COMMENT
+    - REQUEST_CHANGES
+  clean_event: COMMENT
+  non_blocking_event: COMMENT
+  blocking_event: REQUEST_CHANGES
+  escalate_event: COMMENT
+
+shards:
+  augment_skills: []
+  defer_to_coderabbit:
+    - line_level_code_smells
+    - style_and_naming
+    - dependency_and_lint
+  paths:
+    include:
+      - "**/*"
+    exclude: []
+
+severity:
+  tiers:
+    - Blocker
+    - Advisory
+  map:
+    critical: Blocker
+    major: Blocker
+    minor: Advisory
+    nit: Advisory
+  blocks_merge:
+    - Blocker
+
+risk:
+  tiers:
+    - name: none
+      description: "Docs-only, trivial formatting, no runnable code affected"
+    - name: low
+      description: "Single non-structural module, no schema changes, clear rollback"
+    - name: medium
+      description: "Multi-file structural change, or any path matching danger_paths"
+    - name: high
+      description: "Cross-domain, schema, or contract-modifying change"
+    - name: critical
+      description: "Security, auth, personal data, financial logic — mandatory ESCALATE regardless of findings"
+  fast_path:
+    enabled: true
+    max_tier_for_fast_path: low
+  danger_paths:
+    - pattern: "**/*auth*"
+      min_tier: high
+      reason: "Auth-adjacent code"
+    - pattern: "**/*secret*"
+      min_tier: high
+      reason: "Secret-handling code"
+    - pattern: "**/*.csv"
+      min_tier: high
+      reason: "Delimited fixtures may contain raw personal or account data"
+    - pattern: "**/migrations/**"
+      min_tier: high
+      reason: "Schema changes require rollback and caller compatibility review"
+
+context:
+  standards:
+    sources: []
+    enforce: null
+    catalog: []
+    path_instructions: []
+  decisions:
+    central_adr_repo: null
+    system_paths: []
+  domain:
+    entities: []
+    operations: []
+    events: []
+    decisions: []
+    gaps: []
+    debt: []
+    changelog: []
+    designs: []
+    skills: []
+  dives:
+    preload_on_diff: false
+    glob: []
+  discussions:
+    congruence_on_diff: false
+    paths: []
+  ticket:
+    provider: null
+    require_link: false
+    require_acceptance_criteria: false
+    criteria_required_paths: []
+    on_criteria_unavailable: escalate
+    issue_type_aware: true
+  kb:
+    require_citation: true
+    paths: []
+    cross_repo: []
+  pr_template:
+    require_intent: true
+  code_graph:
+    depth: 2
+  review_history:
+    mine_recent_human_patterns: true
+
+review_depth:
+  full_file_threshold_lines: 20
+  sampling_threshold_lines: 500
+  require_caller_trace_for_public_surface: true
+  require_migration_rollback: true
+  service_invariants:
+    - no_external_side_effect_inside_transaction
+    - validation_layering
+    - db_trace_parameter_suppression
+    - toctou_race_check
+
+sensitive_content:
+  block_on_detection: true
+  allowed_evidence:
+    - fully_synthetic
+    - documented_test_identifier
+    - one_way_redaction
+
+external_reviews:
+  block_on_unresolved_actionable: true
+  providers:
+    - login: coderabbitai[bot]
+      blocking_levels:
+        - major
+        - critical
+
+escalation:
+  reviewers: []
+  notify: []
+  on_low_confidence: escalate
+  on_deadlock: escalate
+  on_budget_exhausted: escalate
+
+coderabbit:
+  mode: coexist
+  required_check_name: "CodeRabbit"
+  treat_as_independent_check: true
+  mutate_threads: false
+
+learnings:
+  scope: repo_local
+  auto_apply: repo_local
+  store: .pr-reviewer/learnings/
+  suppressions_expire_days: 90
+  promotion:
+    shared_changes: human
+  registry:
+    enabled: false
+    subscribe: null
+    publish: human_promoted
+
+sandbox:
+  enabled: true
+  test_command: "make test"
+  timeout_seconds: 600
+  network: none
+
+# Bot classification. The public bot names below are the floor.
+# A repo adds its own with bots.additional_bot_logins. A repo cannot remove a name from the floor.
+# When in doubt, classify a login as human: a bot read as human understates the metric,
+# and a human read as a bot overstates it.
+bots:
+  # The login that posts the automated review, when the team runs one. Set it in .pr-reviewer.yaml.
+  automator_reviewer_login: null
+  automator_reviewer_logins: []
+
+  # Structural signals: always a bot, no list membership needed.
+  login_suffix_patterns:
+    - "[bot]"
+  classify_graphql_actor_type_bot: true
+
+  known_logins:
+    - coderabbitai
+    - chatgpt-codex-connector
+    - sonarcloud
+    - snyk-bot
+    - github-actions
+    - dependabot
+    - renovate
+    - web-flow
+
+  login_prefix_patterns: []
+  login_pattern_denylist: []
+  additional_bot_logins: []
+  never_bot_logins: []
+  protected_bot_logins: []
+
+report:
+  closeout_sections:
+    - "Design Conformance"
+    - "Implementation & Tests"
+    - "External Review Coverage"
+    - "Merge Decision"
+  inline_comments: false
+  strategic_impact_required: true
+  standards_summary_in_sections: true
+  notify:
+    force_github_mentions: false

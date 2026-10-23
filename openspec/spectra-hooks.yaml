@@ -1,0 +1,42 @@
+# Team hooks for Spectra. Your team owns this file.
+# Spectra creates it once. Spectra never changes it, never backs it up and never deletes it.
+#
+# A hook changes what the agent does at one step of a change.
+# The schema instruction of every step tells the agent to read this file.
+# The agent follows the hooks of a step in slot order: interview, confirm, gate, write.
+# In one slot, the hooks of Spectra come first.
+#
+# Each hook has these fields:
+#   id      A unique name in kebab case.
+#   stage   The step of the change. One of:
+#             proposal, specs, design, tasks          (spectra-default)
+#             bug-proposal, bug-specs, bug-tasks      (spectra-bug-fix)
+#             survey, baseline-specs, review          (spectra-bootstrap-specs)
+#             apply                                   (every schema)
+#   slot    interview, confirm, gate or write.
+#   kind    interview, gate or apply-driver. A hook of the kind apply-driver uses the stage apply.
+#   text    What the agent must do, in plain sentences.
+#
+# This file holds hooks that drive the flow of a step: an interview, an approval gate or the apply loop.
+# A constraint is not a hook of this file. Write a constraint as a rule in openspec/config.yaml.
+# List the hooks of one stage in slot order. `spectra check` reports an unknown stage, an unknown slot and a wrong order.
+#
+# Example. Remove the comment marks and the empty list below to use it.
+#
+# hooks:
+#   - id: data-questions
+#     stage: proposal
+#     slot: interview
+#     kind: interview
+#     text: >-
+#       Ask the person which data the change reads or writes, and who can see it.
+#       Wait for the answers before you write proposal.md.
+#   - id: design-approval
+#     stage: design
+#     slot: gate
+#     kind: gate
+#     text: >-
+#       Show the design to the person and ask for approval.
+#       Do not start tasks.md before the person approves.
+
+hooks: []

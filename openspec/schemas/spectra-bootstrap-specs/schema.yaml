@@ -1,0 +1,107 @@
+name: spectra-bootstrap-specs
+version: 1
+description: EarnIn workflow that writes baseline specs for code that exists and has none. A survey of the code, baseline specs, and a review that lists each claim that no test proves. It has no tasks. Apply writes the verified baseline specs.
+artifacts:
+  - id: survey
+    generates: survey.md
+    description: What the code does today, with the evidence for each behavior
+    template: survey.md
+    instruction: |
+      Spectra hooks for this step. Do them before the instructions below, in this order:
+      - Team hooks: if openspec/spectra-hooks.yaml exists, read it. Follow the text of each hook whose stage is this step, in slot order (interview, confirm, gate, write). In one slot, follow the Spectra hooks of this list first.
+
+      Create the survey of the code that this change gives baseline specs.
+      The survey records what the code does. It does not record what the code should do.
+
+      Sections:
+      - **Scope**: the module, the service or the directory that the survey covers. State what is out of scope.
+      - **Sources**: each source that you read. Give the code paths, the tests, the configuration, the API definitions and the documents.
+      - **Behaviors**: one entry for each observable behavior. Give a short name, one sentence that states the behavior, and the evidence.
+        The evidence is a file path with a line number, or a test name. A behavior without evidence does not belong here.
+      - **Not covered**: behavior that you saw but cannot state with evidence, and parts of the scope that you did not read.
+
+      Read the code before you read the documents. When a document and the code disagree, record both and name the conflict.
+      Group behaviors by capability. A capability is a cohesive behavior that can own related requirements.
+      Use kebab-case names that follow the project's existing spec organization.
+      Run `openspec list --specs` first. Reuse the exact path of a capability that already has a spec.
+
+      When a PRD or a similar product input exists, load `.agents/skills/spectra/spectra-bootstrap-specs/SKILL.md`
+      and use its prompt to turn that input into requirements. Mark each such requirement as "from the PRD", not as found in the code.
+
+      Do not change code, tests or documents.
+    requires: []
+
+  - id: baseline-specs
+    generates: "specs/**/*.md"
+    description: Baseline specs for the capabilities that the survey found
+    template: spec.md
+    instruction: |
+      Spectra hooks for this step. Do them before the instructions below, in this order:
+      - Team hooks: if openspec/spectra-hooks.yaml exists, read it. Follow the text of each hook whose stage is this step, in slot order (interview, confirm, gate, write). In one slot, follow the Spectra hooks of this list first.
+
+      Create one delta spec for each capability in the survey.
+      Each delta spec uses `## ADDED Requirements`, because the baseline does not exist yet.
+      The first section of each delta spec is `## Purpose`. Write 50 or more characters.
+
+      Rules:
+      - Write each requirement as `### Requirement: <name>` with SHALL or MUST text.
+      - Keep each requirement description to 500 characters or fewer. State one behavior in each requirement.
+      - Write each scenario with exactly four hashtags: `#### Scenario: <name>`. Use WHEN and THEN.
+      - Write only behavior that the survey lists with evidence. Do not add behavior that you think the code should have.
+      - Do not write file names, class names or library names in a requirement.
+      - Give each scenario a `**Verified by**` line. Use `test: <file> :: <title>` when a test proves the scenario.
+        Use `make: <target>` when a make target proves it.
+        When no test or make target proves the scenario, write `todo: G-NN` and leave NN for the review step to fill in.
+
+      Do not write a requirement for a defect. Record the defect in the review.
+    requires:
+      - survey
+
+  - id: review
+    generates: review.md
+    description: The gaps. Each claim that no test proves, and each conflict between the code and the documents
+    template: review.md
+    instruction: |
+      Spectra hooks for this step. Do them before the instructions below, in this order:
+      - Team hooks: if openspec/spectra-hooks.yaml exists, read it. Follow the text of each hook whose stage is this step, in slot order (interview, confirm, gate, write). In one slot, follow the Spectra hooks of this list first.
+
+      Create the review of the baseline specs.
+      The review lists the gaps. A gap is a claim in a baseline spec that no test or make target proves.
+
+      Sections:
+      - **Gaps**: one entry for each gap. Give the gap ID in the form `G-NN`, the capability, the scenario name,
+        and what a test must do to prove the scenario.
+        Number the gaps from the next free number in the project's gap register. If the project has no register, start at G-01.
+      - **Conflicts**: each place where the code and a document disagree. Name both, and say which one the baseline spec follows and why.
+      - **Defects**: behavior that looks wrong. Do not put it in a baseline spec. Give each defect a place to be tracked.
+      - **Coverage**: how many scenarios have a test or a make target, and how many have a gap.
+
+      Every scenario that carries `todo: G-NN` in the baseline specs must have exactly one gap here.
+      Every gap here must be named by at least one scenario.
+      Do not close a gap in this step. Closing a gap needs a test, and a test is new work.
+    requires:
+      - survey
+      - baseline-specs
+
+apply:
+  requires: [survey, baseline-specs, review]
+  instruction: |
+    Spectra hooks for this step. Do them before the instructions below, in this order:
+    - Team hooks: if openspec/spectra-hooks.yaml exists, read it. Follow the text of each hook whose stage is this step, in slot order (interview, confirm, gate, write). In one slot, follow the Spectra hooks of this list first.
+
+    This schema has no tasks and no checkbox list. Do not read or update `tasks.md`.
+    Apply writes the verified baseline specs. It changes no production code.
+
+    Do these steps in order:
+    1. Read the survey, the baseline specs and the review. Re-read them from disk.
+    2. For each scenario, check its `**Verified by**` line.
+       A `test:` line must name a test file that exists and a test title that the file contains.
+       A `make:` line must name a make target that exists.
+       A `todo:` line must name a gap that the review lists.
+    3. Fix each line that fails its check. If a scenario has no proof and no gap, add a gap to the review and set the `todo:` line.
+    4. Run `openspec validate <change> --strict`. Fix each error.
+    5. Tell the person how many scenarios have a test, a make target or a gap.
+
+    Do not write a new test in this step. Do not change a requirement to make it easier to prove.
+    Pause when a conflict in the review needs a decision.
+    After apply, archive the change. Archive copies the baseline specs into `openspec/specs/`.

@@ -1,0 +1,57 @@
+schema: spectra-default
+
+# Project context (optional)
+# Add only constraints that should guide OpenSpec artifacts and workflows.
+# Include constraints an agent cannot infer by reading the code.
+# Keep general project documentation and discoverable codebase facts out.
+# Example:
+#   context: |
+#     Designs and tasks must cover Windows, macOS, and Linux
+#     Write all artifacts in Spanish
+context: |-
+  Spectra: EarnIn golden-path spec-anchored development on stock OpenSpec.
+  Project schemas: spectra-default (proposal → specs → design → tasks), spectra-bug-fix (bug-proposal → bug-specs → bug-tasks) and spectra-bootstrap-specs (survey → baseline-specs → review).
+  Start a change with the spectra-propose skill. It asks what kind of work this is and picks the schema. Without it, a change uses spectra-default.
+  Durable specs: openspec/specs/. In-flight change: openspec/changes/<change>/.
+  Domain glossary: docs/glossary.md (multi-context: docs/glossary-map.md and per-context glossary.md).
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always state what is out of scope
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+rules:
+  proposal:
+    - "[spectra] When the person confirms a term during spectra-grill, update docs/glossary.md in the same turn (see glossary-format.md in that skill)."
+    - "[spectra] Do not put grill Q&A in proposal.md Why; confirmed terms live in docs/glossary.md only."
+  specs:
+    - "[spectra] Create one delta spec per capability from proposal.md Capabilities; follow stock OpenSpec delta format."
+    - "[spectra] Do not add grill transcripts or decision-process rollups under specs/; domain terms belong in docs/glossary.md only."
+  design:
+    - "[spectra] Read docs/glossary.md (and glossary-map / context glossary.md when multi-context) before writing design.md."
+    - "[spectra] Do not re-run spectra-grill at design; grill runs at propose only."
+    - "[spectra] Record settled technical choices in design.md ## Decisions; do not duplicate glossary entries or grill transcripts."
+  bug-proposal:
+    - "[spectra] Run the reproduction before you write the bug report. State the reproduction steps, the observed behavior and the expected behavior in Why."
+  bug-tasks:
+    - "[spectra] Put the regression test before the fix. The test must fail before the fix and pass after it."
+  survey:
+    - "[spectra] Record only behavior that has evidence: a file path with a line number, or a test name. Do not record what the code should do."
+  review:
+    - "[spectra] Give each scenario that carries todo: G-NN exactly one gap in review.md, and name each gap by its G-NN ID."
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing

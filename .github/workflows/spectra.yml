@@ -1,0 +1,223 @@
+# Spectra checks for pull requests.
+# `spectra install` wrote this file once. The file is yours now. Edit it as you need.
+# Keep the file in the repo. `spectra check` reports a missing file (created_missing).
+#
+# What the jobs do
+# Each job fails the run when its check fails. This file does not make a job required.
+# The jobs get read access to the repo contents and nothing more.
+# The jobs read the Spectra version and the OpenSpec version from openspec/.spectra.yaml.
+# `spectra update` moves both versions, so this file needs no edit.
+#
+# Where the Spectra package comes from
+# The jobs `spectra check` and `spectra verify` download the release spectra-v<version> of activehours/spectra
+# in the step "Fetch the Spectra package": the tarball and SHA256SUMS, checked against each other, then run with
+# `bunx --bun -p file:<tarball>`. The registry is not used. That repository is private, so the step needs a token
+# that can read its releases:
+# 1. Create a token with read access to activehours/spectra (contents: read is enough).
+# 2. Add it to this repo as the secret SPECTRA_RELEASE_TOKEN (Settings, Secrets and variables, Actions).
+# The step uses the secret when it is set, and the workflow token otherwise. This is the only secret in the file,
+# and only that step reads it. A pull request from a fork gets no secret, so those two jobs stop at that step.
+# If the step cannot read the release, it stops there and says so, and the check does not run.
+# The job `openspec validate` uses stock OpenSpec only. It never needs the release or a token.
+# When the registry serves @earnin/spectra, you can replace the fetch step and run
+# `bunx @earnin/spectra@<version> check` instead.
+#
+# How to make a job required
+# 1. On GitHub, open Settings of the repo. Go to Branches, or to Rules and then Rulesets.
+# 2. Add or edit the rule for your main branch.
+# 3. Turn on "Require status checks to pass before merging".
+# 4. Add the checks by name: `spectra check`, `openspec validate` and `spectra verify`.
+# A repo can start with `spectra check` and `openspec validate`, and add `spectra verify` later.
+# A required check must run on every pull request. Do not add a `paths:` filter to the trigger.
+# If you rename a job, change its name in the rule too.
+# If you use a merge queue, add `merge_group:` under `on:`.
+#
+# How to stop the runs (opt out)
+# The only way to opt out and keep `spectra check` clean is to change the trigger. The file must stay.
+# 1. Remove each Spectra check from the branch rule first. A required check that never runs blocks every merge.
+# 2. Change `pull_request:` under `on:` to `workflow_dispatch:`. The jobs then run only when a person starts them.
+# Do not delete the file. `spectra check` reports a missing file as a finding.
+name: Spectra
+
+on:
+  pull_request:
+
+concurrency:
+  group: spectra-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: spectra check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.2"
+      - name: Read the pins from the lock record
+        id: pins
+        run: |
+          lock=openspec/.spectra.yaml
+          if [ ! -f "$lock" ]; then
+            echo "::error::$lock is missing. Run spectra install."
+            exit 1
+          fi
+          pin() {
+            awk -v section="$1" '$0 ~ "^" section ":" {f=1; next} /^[^ #]/ {f=0} f && $1 == "version:" {print $2; exit}' "$lock" | tr -d "\"'"
+          }
+          for name in spectra stock; do
+            version="$(pin "$name")"
+            case "$version" in
+              ""|null|*[!0-9A-Za-z.+-]*)
+                echo "::error file=$lock::$name.version is missing or is not a plain version. Run spectra install."
+                exit 1
+                ;;
+            esac
+            echo "$name=$version" >> "$GITHUB_OUTPUT"
+          done
+      - name: Install the stock OpenSpec of the lock record
+        env:
+          STOCK_VERSION: ${{ steps.pins.outputs.stock }}
+        run: npm install --global "@fission-ai/openspec@${STOCK_VERSION}"
+      - name: Fetch the Spectra package
+        env:
+          GH_TOKEN: ${{ secrets.SPECTRA_RELEASE_TOKEN || github.token }}
+          SPECTRA_VERSION: ${{ steps.pins.outputs.spectra }}
+        run: |
+          set -euo pipefail
+          repo="activehours/spectra"
+          tag="spectra-v${SPECTRA_VERSION}"
+          tarball="earnin-spectra-${SPECTRA_VERSION}.tgz"
+          dir="${RUNNER_TEMP}/spectra-release"
+          fail() {
+            echo "::error::$1 The check did not run."
+            exit 1
+          }
+          mkdir -p "$dir"
+          release="$(gh api "repos/${repo}/releases/tags/${tag}" 2> "$dir/error.txt")" \
+            || fail "The runner cannot read the release ${tag} of ${repo} ($(head -c 200 "$dir/error.txt" | tr '\n' ' ')). That repository is private: add the repo secret SPECTRA_RELEASE_TOKEN, a token that can read it."
+          for name in "$tarball" SHA256SUMS; do
+            id="$(jq -r --arg name "$name" '[.assets[] | select(.name == $name) | .id][0] // empty' <<< "$release")"
+            [ -n "$id" ] || fail "The release ${tag} has no asset ${name}."
+            gh api -H "Accept: application/octet-stream" "repos/${repo}/releases/assets/${id}" > "$dir/$name" \
+              || fail "The runner cannot download ${name} from the release ${tag}."
+          done
+          awk -v f="$tarball" 'NF >= 2 && ($2 == f || $2 == "*" f) { ok = 1 } END { exit !ok }' "$dir/SHA256SUMS" \
+            || fail "${tarball} does not match SHA256SUMS, or SHA256SUMS has no line for it."
+          (cd "$dir" && sha256sum --check --ignore-missing SHA256SUMS) \
+            || fail "${tarball} does not match SHA256SUMS, or SHA256SUMS has no line for it."
+          echo "SPECTRA_TGZ=${dir}/${tarball}" >> "$GITHUB_ENV"
+      - name: spectra check
+        env:
+          OPENSPEC_TELEMETRY: "0"
+        run: bunx --bun -p "file:${SPECTRA_TGZ}" spectra check
+
+  validate:
+    name: openspec validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Read the pins from the lock record
+        id: pins
+        run: |
+          lock=openspec/.spectra.yaml
+          if [ ! -f "$lock" ]; then
+            echo "::error::$lock is missing. Run spectra install."
+            exit 1
+          fi
+          pin() {
+            awk -v section="$1" '$0 ~ "^" section ":" {f=1; next} /^[^ #]/ {f=0} f && $1 == "version:" {print $2; exit}' "$lock" | tr -d "\"'"
+          }
+          version="$(pin stock)"
+          case "$version" in
+            ""|null|*[!0-9A-Za-z.+-]*)
+              echo "::error file=$lock::stock.version is missing or is not a plain version. Run spectra install."
+              exit 1
+              ;;
+          esac
+          echo "stock=$version" >> "$GITHUB_OUTPUT"
+      - name: Install the stock OpenSpec of the lock record
+        env:
+          STOCK_VERSION: ${{ steps.pins.outputs.stock }}
+        run: npm install --global "@fission-ai/openspec@${STOCK_VERSION}"
+      - name: openspec validate
+        env:
+          OPENSPEC_TELEMETRY: "0"
+        run: openspec validate --all --strict
+
+  verify:
+    name: spectra verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.2"
+      - name: Read the pins from the lock record
+        id: pins
+        run: |
+          lock=openspec/.spectra.yaml
+          if [ ! -f "$lock" ]; then
+            echo "::error::$lock is missing. Run spectra install."
+            exit 1
+          fi
+          pin() {
+            awk -v section="$1" '$0 ~ "^" section ":" {f=1; next} /^[^ #]/ {f=0} f && $1 == "version:" {print $2; exit}' "$lock" | tr -d "\"'"
+          }
+          version="$(pin spectra)"
+          case "$version" in
+            ""|null|*[!0-9A-Za-z.+-]*)
+              echo "::error file=$lock::spectra.version is missing or is not a plain version. Run spectra install."
+              exit 1
+              ;;
+          esac
+          echo "spectra=$version" >> "$GITHUB_OUTPUT"
+      - name: Fetch the Spectra package
+        env:
+          GH_TOKEN: ${{ secrets.SPECTRA_RELEASE_TOKEN || github.token }}
+          SPECTRA_VERSION: ${{ steps.pins.outputs.spectra }}
+        run: |
+          set -euo pipefail
+          repo="activehours/spectra"
+          tag="spectra-v${SPECTRA_VERSION}"
+          tarball="earnin-spectra-${SPECTRA_VERSION}.tgz"
+          dir="${RUNNER_TEMP}/spectra-release"
+          fail() {
+            echo "::error::$1 The check did not run."
+            exit 1
+          }
+          mkdir -p "$dir"
+          release="$(gh api "repos/${repo}/releases/tags/${tag}" 2> "$dir/error.txt")" \
+            || fail "The runner cannot read the release ${tag} of ${repo} ($(head -c 200 "$dir/error.txt" | tr '\n' ' ')). That repository is private: add the repo secret SPECTRA_RELEASE_TOKEN, a token that can read it."
+          for name in "$tarball" SHA256SUMS; do
+            id="$(jq -r --arg name "$name" '[.assets[] | select(.name == $name) | .id][0] // empty' <<< "$release")"
+            [ -n "$id" ] || fail "The release ${tag} has no asset ${name}."
+            gh api -H "Accept: application/octet-stream" "repos/${repo}/releases/assets/${id}" > "$dir/$name" \
+              || fail "The runner cannot download ${name} from the release ${tag}."
+          done
+          awk -v f="$tarball" 'NF >= 2 && ($2 == f || $2 == "*" f) { ok = 1 } END { exit !ok }' "$dir/SHA256SUMS" \
+            || fail "${tarball} does not match SHA256SUMS, or SHA256SUMS has no line for it."
+          (cd "$dir" && sha256sum --check --ignore-missing SHA256SUMS) \
+            || fail "${tarball} does not match SHA256SUMS, or SHA256SUMS has no line for it."
+          echo "SPECTRA_TGZ=${dir}/${tarball}" >> "$GITHUB_ENV"
+      - name: spectra verify
+        run: bunx --bun -p "file:${SPECTRA_TGZ}" spectra verify

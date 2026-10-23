@@ -1,0 +1,113 @@
+name: spectra-bug-fix
+version: 1
+description: EarnIn bug-fix workflow. A bug report with a reproduction and the expected behavior, a delta spec for the corrected behavior, and tasks that hold the fix and a regression test.
+artifacts:
+  - id: bug-proposal
+    generates: proposal.md
+    description: Bug report with the reproduction and the expected behavior
+    template: proposal.md
+    instruction: |
+      Spectra hooks for this step. Do them before the instructions below, in this order:
+      - Team hooks: if openspec/spectra-hooks.yaml exists, read it. Follow the text of each hook whose stage is this step, in slot order (interview, confirm, gate, write). In one slot, follow the Spectra hooks of this list first.
+
+      Create the bug report for this change.
+      It states what is wrong and what must be true after the fix.
+      Do not write the fix, the cause analysis or a design here.
+
+      Sections:
+      - **Why**: the bug, in three parts.
+        - Reproduction: numbered steps that start from a known state and end in the failure. Name the input, the command or the request.
+        - Observed behavior: what happens now. Quote the error or the wrong output.
+        - Expected behavior: what must happen instead. Cite the spec requirement or the document that says so.
+      - **What Changes**: one bullet for each visible change that the fix makes. Mark a breaking change with **BREAKING**.
+      - **Capabilities**: name each capability whose requirements change.
+        - **New Capabilities**: leave empty unless the fix adds a behavior that no spec covers.
+        - **Modified Capabilities**: list each existing capability whose requirement is wrong or silent about this bug. Use the exact path under `openspec/specs/`.
+      - **Impact**: the code, the APIs and the data that the fix touches.
+
+      Run the reproduction before you write the report. If it does not fail, stop and ask.
+      Research the existing specs before you fill in Capabilities:
+      run `openspec list --specs`, then `openspec show "<spec-id>" --type spec` for each capability that looks related.
+      Read each related spec in full, with its scenarios.
+
+      If an existing scenario already states the expected behavior, the spec is correct and the code is wrong.
+      Then list no capability, and set `skip_specs: true` in the change's `.openspec.yaml`.
+      Do not invent a requirement only to satisfy validation.
+
+      Keep the report to one page.
+    requires: []
+
+  - id: bug-specs
+    generates: "specs/**/*.md"
+    description: Delta specs that state the corrected behavior
+    template: spec.md
+    instruction: |
+      Spectra hooks for this step. Do them before the instructions below, in this order:
+      - Team hooks: if openspec/spectra-hooks.yaml exists, read it. Follow the text of each hook whose stage is this step, in slot order (interview, confirm, gate, write). In one slot, follow the Spectra hooks of this list first.
+
+      Create one delta spec for each capability that the bug report lists.
+      Write the behavior that must hold after the fix. Do not write the fix.
+
+      Rules:
+      - Use `## MODIFIED Requirements` when the existing requirement is wrong or incomplete. Copy the whole requirement block and edit it. Never paste a partial block.
+      - Use `## ADDED Requirements` when no requirement covers the behavior.
+      - Add one scenario that reproduces the bug. Its WHEN part holds the reproduction. Its THEN part holds the expected behavior.
+      - Put the `**Verified by**` line under that scenario when the regression test is known. Name the test file and the test title.
+      - Write each requirement in the form `### Requirement: <name>` with SHALL or MUST text.
+      - Write each scenario with exactly four hashtags: `#### Scenario: <name>`.
+      - Keep each requirement description to 500 characters or fewer. State one behavior in each requirement.
+      - Keep implementation details out of the spec.
+
+      The first section of a new capability is `## Purpose`. Write 50 or more characters.
+      Do not add `## Purpose` to a delta for an existing capability.
+
+      If the bug report sets `skip_specs: true`, do not create this artifact.
+    requires:
+      - bug-proposal
+
+  - id: bug-tasks
+    generates: tasks.md
+    description: The fix and the regression test
+    template: tasks.md
+    instruction: |
+      Spectra hooks for this step. Do them before the instructions below, in this order:
+      - Team hooks: if openspec/spectra-hooks.yaml exists, read it. Follow the text of each hook whose stage is this step, in slot order (interview, confirm, gate, write). In one slot, follow the Spectra hooks of this list first.
+
+      Create the task list that fixes the bug and proves the fix.
+
+      Every task list holds these tasks, in this order:
+      1. A task that adds the regression test. The test must fail before the fix, for the reason that the bug report gives.
+      2. A task that fixes the cause. Name the file or the module when you know it.
+      3. A task that runs the regression test and the existing tests, and records that they pass.
+
+      Add a task for each other change that the fix needs, such as a data repair or a documentation change.
+      Do not add a task for a refactor that the fix does not need.
+
+      **IMPORTANT: Follow the template below exactly.** The apply phase parses the checkbox format.
+      - Group related tasks under numbered `##` headings.
+      - Write each task as a checkbox: `- [ ] X.Y Task description`.
+      - Keep each task small enough to finish in one session.
+      - Order the tasks by dependency.
+
+      Reference the specs for what the fix must do. Reference the bug report for the reproduction.
+    requires:
+      - bug-proposal
+      - bug-specs
+
+apply:
+  requires: [bug-tasks]
+  tracks: tasks.md
+  instruction: |
+    Spectra hooks for this step. Do them before the instructions below, in this order:
+    - Team hooks: if openspec/spectra-hooks.yaml exists, read it. Follow the text of each hook whose stage is this step, in slot order (interview, confirm, gate, write). In one slot, follow the Spectra hooks of this list first.
+
+    Read the bug report, the delta specs and the tasks before you change code.
+    Work through the pending tasks in order. Mark each task complete when it is done.
+
+    Write the regression test first. Run it and see it fail for the reason in the bug report.
+    If it passes, stop. The reproduction is wrong or the bug is gone. Tell the person, and update the bug report.
+    Then fix the cause. Run the regression test again and see it pass. Run the existing tests.
+
+    If the cause differs from what the bug report says, update the bug report and the delta specs before you go on.
+    Pause when you hit a blocker or need a decision.
+    Do not change behavior that the delta specs do not name.

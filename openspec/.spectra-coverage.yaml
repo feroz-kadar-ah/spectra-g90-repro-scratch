@@ -1,0 +1,13 @@
+# Spectra coverage baseline. `spectra install` wrote this file once. You own it now.
+#
+# `spectra verify` reads the baseline specs in openspec/specs/. A scenario is unproven when it has no
+# `**Verified by**` line, when the line says `todo: <id>`, or when it names a test file, a test title or a
+# make target that does not exist.
+#
+# `unproven` is the number of unproven scenarios that this repo allows. `spectra verify` fails when the count goes above it.
+# When the count goes down, run `spectra verify --update-baseline` to lower the number.
+# Raise the number only by hand, in a reviewed change.
+# `spectra install` wrote the number of unproven scenarios that the repo had on that day.
+# So the first `spectra verify` passes, and the count cannot go up from there.
+schema_version: 1
+unproven: 0

@@ -1,0 +1,399 @@
+schema_version: 1
+spectra:
+  version: 0.1.0-mvp.19
+  source_tag: spectra-v0.1.0-mvp.19
+  config_digest: 6091913316fe9eff5689763f0873e0c322d84ab4abecbf298e5d12a77a88dec9
+  openspec_schema: spectra-default
+schemas:
+  - name: spectra-default
+    base_stock_version: spec-driven@1.14.2
+    digest: 766a199d2ebb162fd5d6ab7ae1a8604cbddacfe5994cab4e92e394753efe32e1
+  - name: spectra-bug-fix
+    digest: 81e64c7c0e40352c03cab1bd0289b3d828e94cb1b8b15d6bc27c76db28cfb506
+  - name: spectra-bootstrap-specs
+    digest: 74df7213463361845fc52b499dbea1627b3bf6d924caee92d33b405b66317ff7
+stock:
+  tool: openspec
+  version: null
+  tool_dirs:
+    - cursor
+files:
+  - path: .agents/skills/spectra/spectra-ask/SKILL.md
+    class: owned
+    operation: copy
+    sha256: 4251fa5d87f4c56aa6bb5143bcd994138d9b80fb7a60f6616c336cf99c3887a0
+  - path: .agents/skills/spectra/spectra-bootstrap-specs/SKILL.md
+    class: owned
+    operation: copy
+    sha256: 656740720f2fdba7a6eac7e437c27fc6b61bb4fd306c4d0c33ede3c1bbaea024
+  - path: .agents/skills/spectra/spectra-bootstrap-specs/extract-spec-from-prd.prompt.md
+    class: owned
+    operation: copy
+    sha256: fa0d8c2f3bb9ae48fa9b4442868718ac82fede7eefd48db1d8cb77140963382c
+  - path: .agents/skills/spectra/spectra-branch/SKILL.md
+    class: owned
+    operation: copy
+    sha256: 7dac15fd7f8f7f3b592f58157430baa4b1a1d459cb529d517e719d0ac2d28393
+  - path: .agents/skills/spectra/spectra-codebase-design/DEEPENING.md
+    class: owned
+    operation: copy
+    sha256: f3dd099ce99289bd213914d8ee3e2429b78309c3957ca4583f7659551b1d53c1
+  - path: .agents/skills/spectra/spectra-codebase-design/DESIGN-IT-TWICE.md
+    class: owned
+    operation: copy
+    sha256: 52b52e75655a27aea59c6966b410bac82448968ad46ef1ebb9f07c274e3ae010
+  - path: .agents/skills/spectra/spectra-codebase-design/LICENSE
+    class: owned
+    operation: copy
+    sha256: 0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5
+  - path: .agents/skills/spectra/spectra-codebase-design/SKILL.md
+    class: owned
+    operation: copy
+    sha256: 2c20617f87ec8af6a434859f381b2f061a69b530444e74eb39e78bb016a6d1e2
+  - path: .agents/skills/spectra/spectra-construct-tests/SKILL.md
+    class: owned
+    operation: copy
+    sha256: 8143085ccfce019db559ce3a5c7c2a1ce06e94dc06b3b74d11e795326a7c59e9
+  - path: .agents/skills/spectra/spectra-construct-tests/construct-tests.prompt.md
+    class: owned
+    operation: copy
+    sha256: 7d18a2c2bd10e7105fc13e967e68c564e7f9d72362cb3f894cbe427e8ad49b58
+  - path: .agents/skills/spectra/spectra-decisions/SKILL.md
+    class: owned
+    operation: copy
+    sha256: feb04f7199375c6910b63b2e3519e0a42852149b01d547af86d9752b06a68afe
+  - path: .agents/skills/spectra/spectra-decisions/extract-adr-from-design.prompt.md
+    class: owned
+    operation: copy
+    sha256: 371d3a10e7dfc84a9f2191ad8092419b7d3df54ffb9fe019362ac8ac2016eba4
+  - path: .agents/skills/spectra/spectra-decisions/extract-decision-matrix-from-research.prompt.md
+    class: owned
+    operation: copy
+    sha256: 1217e9d3c3fb581244e4852cec60e9f1c812ad9b9964875492d998372274e732
+  - path: .agents/skills/spectra/spectra-design-narrative/SKILL.md
+    class: owned
+    operation: copy
+    sha256: fc37e4edaa3c0c19b93f4b250768171755a2c1f4cbb108535d59fd213469cda0
+  - path: .agents/skills/spectra/spectra-design-narrative/analyze-design-dive.prompt.md
+    class: owned
+    operation: copy
+    sha256: af7b8948e555a885efbb3bcd959b92935e11dedfb71941a599065952fdd649af
+  - path: .agents/skills/spectra/spectra-design-narrative/explain-design-narrative.prompt.md
+    class: owned
+    operation: copy
+    sha256: 0ab8b1c0b510d69d71c818dd2051c73622be406b6e64270ec6fff483c72a4f25
+  - path: .agents/skills/spectra/spectra-design-narrative/extract-key-takeaways.prompt.md
+    class: owned
+    operation: copy
+    sha256: b31be2dcb2b776777cfe614e4912a3a4a4416683a48c297ce93717013e93f86d
+  - path: .agents/skills/spectra/spectra-design-narrative/generate-design-narrative.prompt.md
+    class: owned
+    operation: copy
+    sha256: 3c20bbe861cf9f4f71106e9a01569186f3f833e330b6de13f4b79b6997154148
+  - path: .agents/skills/spectra/spectra-design-review/SKILL.md
+    class: owned
+    operation: copy
+    sha256: 3c57dc5e7cf65deffe4cb8d79b40b4fe4a241154a94f3e4b422392d160ec59d2
+  - path: .agents/skills/spectra/spectra-draft-github-issue/SKILL.md
+    class: owned
+    operation: copy
+    sha256: 630da7d9ca00a6ca22758971b25361eaa868757762de77578250e493c26a18be
+  - path: .agents/skills/spectra/spectra-draft-github-issue/extract-epics-from-design.prompt.md
+    class: owned
+    operation: copy
+    sha256: 8a9b76300660973b3c8bea23faf58b0b2a5c5c7917ca5e393583850d31d61605
+  - path: .agents/skills/spectra/spectra-git-worktrees/SKILL.md
+    class: owned
+    operation: copy
+    sha256: ded5a926eb870053414a9048325cfa3f772806ac6626e6ee5bc54315475e5b51
+  - path: .agents/skills/spectra/spectra-git-worktrees/git-worktree.prompt.md
+    class: owned
+    operation: copy
+    sha256: 4da335d1abf594fd9532a97780ae1bb5550f5c5c987a3c08dc1b6d2bb61bd727
+  - path: .agents/skills/spectra/spectra-grill/SKILL.md
+    class: owned
+    operation: copy
+    sha256: 258f0c23b7e84791476d703d9626345decaacceae86c60a6b58339de78a7e20a
+  - path: .agents/skills/spectra/spectra-grill/glossary-format.md
+    class: owned
+    operation: copy
+    sha256: c2979946561af069c56956f75501ae5d70a0d743e98917fed01d53be8096ac71
+  - path: .agents/skills/spectra/spectra-install-check/SKILL.md
+    class: owned
+    operation: copy
+    sha256: 50e3d8b15937367b1ca3f244457bb9fda058da874da47802d0258c171ab2f81d
+  - path: .agents/skills/spectra/spectra-pr-code-review/SKILL.md
+    class: owned
+    operation: copy
+    sha256: 35dddebd0f05429bf60f2aa9eda2138abd2a9909d1bb568de8387f06106a16a9
+  - path: .agents/skills/spectra/spectra-pr-code-review/code-review.prompt.md
+    class: owned
+    operation: copy
+    sha256: d5d7fe2534db408178e5d8b813a101bc61e42f2f26b330c38c98cfd49e2daa97
+  - path: .agents/skills/spectra/spectra-pr-feedback-fixer/SKILL.md
+    class: owned
+    operation: copy
+    sha256: 1eaf9169674c6275806e1ce6954aee098c5eecfe766a28bcb3ee678068b9f400
+  - path: .agents/skills/spectra/spectra-pr-feedback-fixer/pr-feedback-fixer.mk
+    class: owned
+    operation: copy
+    sha256: e39475bf1df8a2d49be2a1398b4466e5acfab23952a924c0cd15f5810e48d1c3
+  - path: .agents/skills/spectra/spectra-pr-feedback-fixer/pr-feedback-fixer.prompt.md
+    class: owned
+    operation: copy
+    sha256: b7abd7d190d044b94fcdaca1d6d36ff9216704daa27fd3d990458e143088750e
+  - path: .agents/skills/spectra/spectra-pr-feedback-fixer/update-spec-per-feedback.prompt.md
+    class: owned
+    operation: copy
+    sha256: 80d6950d1a637750b147f30a64ec5c118e689121f2492020bc06ce7eae15fc45
+  - path: .agents/skills/spectra/spectra-pr-review/SKILL.md
+    class: owned
+    operation: copy
+    sha256: a14d2c77ac3092894bce5e297146d4446bc0da692cf3273ac229a78d3596a8cc
+  - path: .agents/skills/spectra/spectra-pr-review/check-conformance.prompt.md
+    class: owned
+    operation: copy
+    sha256: 60b61085d63640f4790e6ac7f661ada26d9511e2a4e0f7eb7d8a9111c0cb2dee
+  - path: .agents/skills/spectra/spectra-pr-review/check-congruence.prompt.md
+    class: owned
+    operation: copy
+    sha256: 2b88cd8c98c671f65542f296320b6589a6f86545e238a04221ad872ca76be803
+  - path: .agents/skills/spectra/spectra-pr-review/pr-branch-summary-tree.prompt.md
+    class: owned
+    operation: copy
+    sha256: a3c2ea3c3dda3e103f797fdeb0dabdcb04e0c21fb0976ed706fe63a38067e9ef
+  - path: .agents/skills/spectra/spectra-pr-review/pr-review.prompt.md
+    class: owned
+    operation: copy
+    sha256: 96cad9bfe5abff744036030d378645c080bd9335d9175a0b3d22196bff448136
+  - path: .agents/skills/spectra/spectra-pr-review/pr-reviewer.default.yaml
+    class: owned
+    operation: copy
+    sha256: fc93fe7167b1bb54a9532959a1b171777eda18fdca5a0d3fba1f1f143207b3e0
+  - path: .agents/skills/spectra/spectra-pr/SKILL.md
+    class: owned
+    operation: copy
+    sha256: 546bce63561888de1c39bc6e846c425a3e891d955ef23ed2a128e3ddf9c85530
+  - path: .agents/skills/spectra/spectra-propose/SKILL.md
+    class: owned
+    operation: copy
+    sha256: 28c2f81dfd22db261b7960d4b761eeeab1a74f047656529e263ea5dc85036b66
+  - path: .agents/skills/spectra/spectra-refactor-toward-conformance/SKILL.md
+    class: owned
+    operation: copy
+    sha256: 04f2f7efc52a7588dd5b6d0a0e71636325e8c59833d942ae5008945f66ac48a2
+  - path: .agents/skills/spectra/spectra-refactor-toward-conformance/refactor-toward-conformance.prompt.md
+    class: owned
+    operation: copy
+    sha256: ae657e615d36aabf884efc275183c0ed6bbfe2a4fe6479f4d8c3ead1089fd995
+  - path: .agents/skills/spectra/spectra-tdd/LICENSE
+    class: owned
+    operation: copy
+    sha256: 0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5
+  - path: .agents/skills/spectra/spectra-tdd/SKILL.md
+    class: owned
+    operation: copy
+    sha256: 5505d25bbaa8fc14a79e4d20163936958992a2995b7f1dd1d6197edc9ed722e0
+  - path: .agents/skills/spectra/spectra-tdd/mocking.md
+    class: owned
+    operation: copy
+    sha256: 3ceb807fdf4a47d6a93d4d9a891e5ba6d362a6247bd08adc451feebfc17361ef
+  - path: .agents/skills/spectra/spectra-tdd/tests.md
+    class: owned
+    operation: copy
+    sha256: 859f9e592c188fda4fc7277dd180e4ce9c7a2e13f6efe1f6f29eccc9d28c106a
+  - path: .agents/skills/spectra/spectra-work-intake/SKILL.md
+    class: owned
+    operation: copy
+    sha256: 2dae2dfecb0ac144c761c3c90267249600e25d91dde3f1256287468b65d37564
+  - path: .agents/skills/spectra/spectra-work-intake/channels.yaml
+    class: owned
+    operation: copy
+    sha256: 2c482e31b748d7dd0044564dad07d02de477478cf1c0e5a7ba2402544980097c
+  - path: .agents/skills/spectra/spectra-work-intake/draft-ticket.prompt.md
+    class: owned
+    operation: copy
+    sha256: c772932e510e361c90fea9f8423cdcc32b2084072b3c388e1454425cc7ee9d88
+  - path: .agents/skills/spectra/spectra-work-intake/file-ticket.prompt.md
+    class: owned
+    operation: copy
+    sha256: f1174796f5074446393e2509692e32b5e25a5aa02baba5d35620267e3c692fc1
+  - path: .cursor/skills/spectra-ask
+    class: owned
+    operation: symlink
+    target: .agents/skills/spectra/spectra-ask
+  - path: .cursor/skills/spectra-bootstrap-specs
+    class: owned
+    operation: symlink
+    target: .agents/skills/spectra/spectra-bootstrap-specs
+  - path: .cursor/skills/spectra-branch
+    class: owned
+    operation: symlink
+    target: .agents/skills/spectra/spectra-branch
+  - path: .cursor/skills/spectra-codebase-design
+    class: owned
+    operation: symlink
+    target: .agents/skills/spectra/spectra-codebase-design
+  - path: .cursor/skills/spectra-construct-tests
+    class: owned
+    operation: symlink
+    target: .agents/skills/spectra/spectra-construct-tests
+  - path: .cursor/skills/spectra-decisions
+    class: owned
+    operation: symlink
+    target: .agents/skills/spectra/spectra-decisions
+  - path: .cursor/skills/spectra-design-narrative
+    class: owned
+    operation: symlink
+    target: .agents/skills/spectra/spectra-design-narrative
+  - path: .cursor/skills/spectra-design-review
+    class: owned
+    operation: symlink
+    target: .agents/skills/spectra/spectra-design-review
+  - path: .cursor/skills/spectra-draft-github-issue
+    class: owned
+    operation: symlink
+    target: .agents/skills/spectra/spectra-draft-github-issue
+  - path: .cursor/skills/spectra-git-worktrees
+    class: owned
+    operation: symlink
+    target: .agents/skills/spectra/spectra-git-worktrees
+  - path: .cursor/skills/spectra-grill
+    class: owned
+    operation: symlink
+    target: .agents/skills/spectra/spectra-grill
+  - path: .cursor/skills/spectra-install-check
+    class: owned
+    operation: symlink
+    target: .agents/skills/spectra/spectra-install-check
+  - path: .cursor/skills/spectra-pr
+    class: owned
+    operation: symlink
+    target: .agents/skills/spectra/spectra-pr
+  - path: .cursor/skills/spectra-pr-code-review
+    class: owned
+    operation: symlink
+    target: .agents/skills/spectra/spectra-pr-code-review
+  - path: .cursor/skills/spectra-pr-feedback-fixer
+    class: owned
+    operation: symlink
+    target: .agents/skills/spectra/spectra-pr-feedback-fixer
+  - path: .cursor/skills/spectra-pr-review
+    class: owned
+    operation: symlink
+    target: .agents/skills/spectra/spectra-pr-review
+  - path: .cursor/skills/spectra-propose
+    class: owned
+    operation: symlink
+    target: .agents/skills/spectra/spectra-propose
+  - path: .cursor/skills/spectra-refactor-toward-conformance
+    class: owned
+    operation: symlink
+    target: .agents/skills/spectra/spectra-refactor-toward-conformance
+  - path: .cursor/skills/spectra-tdd
+    class: owned
+    operation: symlink
+    target: .agents/skills/spectra/spectra-tdd
+  - path: .cursor/skills/spectra-work-intake
+    class: owned
+    operation: symlink
+    target: .agents/skills/spectra/spectra-work-intake
+  - path: .github/workflows/spectra.yml
+    class: created
+    operation: create-if-absent
+  - path: AGENTS.md
+    class: merged
+    operation: merge-block
+    markers:
+      begin: <!-- BEGIN SPECTRA -->
+      end: <!-- END SPECTRA -->
+  - path: CLAUDE.md
+    class: created
+    operation: create-if-absent
+  - path: docs/glossary.md
+    class: created
+    operation: create-if-absent
+  - path: openspec/.spectra-coverage.yaml
+    class: created
+    operation: create-if-absent
+  - path: openspec/config.yaml
+    class: merged
+    operation: merge-yaml
+    tags:
+      - '[spectra]'
+  - path: openspec/schemas/spectra-bootstrap-specs/schema.yaml
+    class: owned
+    operation: copy
+    sha256: 9d9d52c1f0b2147df01a680fcee1bdbb225c0b94b8bf019664f9d3222cc228dd
+  - path: openspec/schemas/spectra-bootstrap-specs/templates/review.md
+    class: owned
+    operation: copy
+    sha256: 7a914db2cd91f016c8784844fc1738981677407cc4d6d295d03529e410bee085
+  - path: openspec/schemas/spectra-bootstrap-specs/templates/spec.md
+    class: owned
+    operation: copy
+    sha256: 9e10531210a038fffff83df043fe196ef58d48916544969b400c3c4e58bede03
+  - path: openspec/schemas/spectra-bootstrap-specs/templates/survey.md
+    class: owned
+    operation: copy
+    sha256: 98597ee7809168764593cbe709c0073845a9bcfe5731156136432c28f2cf8bcd
+  - path: openspec/schemas/spectra-bug-fix/schema.yaml
+    class: owned
+    operation: copy
+    sha256: c0df9f5a4c5e93dc5f3d0fe6bbd1fc80576422b2edbcccdc27b5e33417d1d056
+  - path: openspec/schemas/spectra-bug-fix/templates/proposal.md
+    class: owned
+    operation: copy
+    sha256: bb66c46ec6d376a03b4258afc8a4be3d6125eec55ea86fe59de008775dd4f06c
+  - path: openspec/schemas/spectra-bug-fix/templates/spec.md
+    class: owned
+    operation: copy
+    sha256: 58b4c40ab9d3288276aa52685f4ec19db1e91271047eba37cb28952a0567fdb9
+  - path: openspec/schemas/spectra-bug-fix/templates/tasks.md
+    class: owned
+    operation: copy
+    sha256: 23126228189d78932bd3c4eb8c3eb3be314f750e91a6f655fc0e8d8c9117c92b
+  - path: openspec/schemas/spectra-default/schema.yaml
+    class: owned
+    operation: copy
+    sha256: bbb177938248a90caabd2e7d912df692ad7dce340de3f67d2016704402260fee
+  - path: openspec/schemas/spectra-default/templates/design.md
+    class: owned
+    operation: copy
+    sha256: 6ccc87f5017fb190e69e8759dd4e20d5ac3320cc4dabf152708bf8f2aa5205f8
+  - path: openspec/schemas/spectra-default/templates/proposal.md
+    class: owned
+    operation: copy
+    sha256: 0dd70e35db5c696ba8ac3cc3a53e2d6561865c1e4e7d49db5a1eaa3e4a6ad86e
+  - path: openspec/schemas/spectra-default/templates/spec.md
+    class: owned
+    operation: copy
+    sha256: 1cccfb573f031c6352bed2a879b7035ff710bc909112fc23d10bdcfcdd8d4318
+  - path: openspec/schemas/spectra-default/templates/tasks.md
+    class: owned
+    operation: copy
+    sha256: fa67d99fb4a93b12d702f89ea83e1838219d1cad1c90a4192c402278001cd30e
+  - path: openspec/spectra-hooks.yaml
+    class: created
+    operation: create-if-absent
+vendored:
+  - name: spectra/spectra-codebase-design
+    upstream: https://github.com/mattpocock/skills
+    commit: 49dd158d1076134a641b33efb035946536778336
+    license: LICENSE
+    subdir: skills/engineering/codebase-design
+    digests:
+      DEEPENING.md: f3dd099ce99289bd213914d8ee3e2429b78309c3957ca4583f7659551b1d53c1
+      DESIGN-IT-TWICE.md: 52b52e75655a27aea59c6966b410bac82448968ad46ef1ebb9f07c274e3ae010
+      LICENSE: 0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5
+      SKILL.md: 2c20617f87ec8af6a434859f381b2f061a69b530444e74eb39e78bb016a6d1e2
+  - name: spectra/spectra-tdd
+    upstream: https://github.com/mattpocock/skills
+    commit: 49dd158d1076134a641b33efb035946536778336
+    license: LICENSE
+    subdir: skills/engineering/tdd
+    digests:
+      LICENSE: 0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5
+      mocking.md: 3ceb807fdf4a47d6a93d4d9a891e5ba6d362a6247bd08adc451feebfc17361ef
+      SKILL.md: 5505d25bbaa8fc14a79e4d20163936958992a2995b7f1dd1d6197edc9ed722e0
+      tests.md: 859f9e592c188fda4fc7277dd180e4ce9c7a2e13f6efe1f6f29eccc9d28c106a

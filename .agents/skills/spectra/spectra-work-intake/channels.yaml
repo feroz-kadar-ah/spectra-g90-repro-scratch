@@ -1,0 +1,46 @@
+# Work Intake — Slack channel -> Jira project routing registry.
+#
+# This file ships empty. It holds data only; the behavior is in draft-ticket.prompt.md
+# and file-ticket.prompt.md. A team keeps its own registry in a file of its own and passes
+# it with registry=<path>. The skill reads that file first and this file second.
+#
+# Adding a channel: confirm the real Slack channel_id and Jira project_key with the
+# owning team first, then add a channels[] entry to the registry file. Do not guess or
+# reuse an ID from another team's channel.
+#
+# Example entry (do not copy the placeholder values):
+#
+#   - channel_key: team-intake
+#     display_name: "#team-intake"
+#     slack:
+#       channel_id: C0000000000
+#     jira:
+#       project_key: PROJ
+#       issue_type: Task
+#       labels: [work-intake]
+#       components: []
+#       priority: null
+#       epic_link: null
+#       # Free-form escape hatch for a channel that needs a Jira field not named above
+#       # (for example a custom field ID). Keys are Jira field IDs or names as accepted
+#       # by createJiraIssue; agent instructions never live here.
+#       additional_fields: {}
+#     notes: Default intake lane for the team.
+
+version: 1
+source: Ships empty; each team supplies its own registry.
+
+# Applied to every channel entry unless a channel overrides the key.
+defaults:
+  jira:
+    issue_type: Task
+    priority: null
+    components: []
+    labels: [work-intake]
+  dedup:
+    # Marker line written into every created ticket's description and searched for via
+    # JQL before creating a new one, keyed on the Slack thread permalink.
+    # See draft-ticket.prompt.md, section Dedup marker.
+    marker_prefix: "Slack thread:"
+
+channels: []
